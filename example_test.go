@@ -6,13 +6,13 @@ import (
 )
 
 func ExampleOpen() {
-	if xlFile, err := Open("Table.xls", "utf-8"); err == nil {
+	if xlFile, err := Open("./testdata/Table.xls", "utf-8"); err == nil {
 		fmt.Println(xlFile.Author)
 	}
 }
 
 func ExampleWorkBook_NumberSheets() {
-	if xlFile, err := Open("Table.xls", "utf-8"); err == nil {
+	if xlFile, err := Open("./testdata/Table.xls", "utf-8"); err == nil {
 		for i := 0; i < xlFile.NumSheets(); i++ {
 			sheet := xlFile.GetSheet(i)
 			fmt.Println(sheet.Name)
@@ -22,7 +22,7 @@ func ExampleWorkBook_NumberSheets() {
 
 //Output: read the content of first two cols in each row
 func ExampleWorkBook_GetSheet() {
-	if xlFile, err := Open("Table.xls", "utf-8"); err == nil {
+	if xlFile, err := Open("./testdata/Table.xls", "utf-8"); err == nil {
 		if sheet1 := xlFile.GetSheet(0); sheet1 != nil {
 			fmt.Print("Total Lines ", sheet1.MaxRow, sheet1.Name)
 			col1 := sheet1.Row(0).Col(0)
@@ -39,7 +39,7 @@ func ExampleWorkBook_GetSheet() {
 
 func BenchmarkGetSheet(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		if xlFile, err := Open("Table.xls", "utf-8"); err == nil {
+		if xlFile, err := Open("./testdata/Table.xls", "utf-8"); err == nil {
 			for i := 0; i < xlFile.NumSheets(); i++ {
 				xlFile.GetSheet(i)
 			}
@@ -49,7 +49,7 @@ func BenchmarkGetSheet(b *testing.B) {
 
 func BenchmarkGetSheetWithBuffer(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		if xlFile, err := OpenWithBuffer("Table.xls", "utf-8"); err == nil {
+		if xlFile, err := OpenWithBuffer("./testdata/Table.xls", "utf-8"); err == nil {
 			for i := 0; i < xlFile.NumSheets(); i++ {
 				xlFile.GetSheet(i)
 			}
