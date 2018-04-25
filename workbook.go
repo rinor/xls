@@ -10,21 +10,21 @@ import (
 
 // WorkBook represents xls workbook type
 type WorkBook struct {
-	Is5ver         bool
-	Type           uint16
-	Codepage       uint16
-	Xfs            []XF
-	Fonts          []Font
-	Formats        map[uint16]*Format
-	sheets         []*WorkSheet
-	Author         string
-	rs             io.ReadSeeker
-	sst            []string
-	ref            *extSheetRef
-	continue_utf16 uint16
-	continue_rich  uint16
-	continue_apsb  uint32
-	dateMode       uint16
+	Is5ver        bool
+	Type          uint16
+	Codepage      uint16
+	Xfs           []XF
+	Fonts         []Font
+	Formats       map[uint16]*Format
+	sheets        []*WorkSheet
+	Author        string
+	rs            io.ReadSeeker
+	sst           []string
+	ref           *extSheetRef
+	continueUtf16 uint16
+	continueRich  uint16
+	continueApsb  uint32
+	dateMode      uint16
 }
 
 // newWorkBookFromOle2 read workbook from ole2 file
@@ -56,9 +56,9 @@ func (w *WorkBook) parse(buf io.ReadSeeker) {
 	}
 }
 
-func (wb *WorkBook) parseBof(buf io.ReadSeeker, b *bof, pre *bof, offset_pre int) (after *bof, after_using *bof, offset int) {
+func (wb *WorkBook) parseBof(buf io.ReadSeeker, b *bof, pre *bof, offsetPre int) (after *bof, afterUsing *bof, offset int) {
 	after = b
-	after_using = pre
+	afterUsing = pre
 	var bts = make([]byte, b.Size)
 	binary.Read(buf, binary.LittleEndian, bts)
 	item := bytes.NewReader(bts)
@@ -76,30 +76,30 @@ func (wb *WorkBook) parseBof(buf io.ReadSeeker, b *bof, pre *bof, offset_pre int
 		if pre.Id == 0xfc {
 			var size uint16
 			var err error
-			if wb.continue_utf16 >= 1 {
-				size = wb.continue_utf16
-				wb.continue_utf16 = 0
+			if wb.continueUtf16 >= 1 {
+				size = wb.continueUtf16
+				wb.continueUtf16 = 0
 			} else {
 				err = binary.Read(item, binary.LittleEndian, &size)
 			}
-			for err == nil && offset_pre < len(wb.sst) {
+			for err == nil && offsetPre < len(wb.sst) {
 				var str string
 				if size > 0 {
 					str, err = wb.parseString(item, size)
-					wb.sst[offset_pre] = wb.sst[offset_pre] + str
+					wb.sst[offsetPre] = wb.sst[offsetPre] + str
 				}
 
 				if err == io.EOF {
 					break
 				}
 
-				offset_pre++
+				offsetPre++
 				err = binary.Read(item, binary.LittleEndian, &size)
 			}
 		}
-		offset = offset_pre
+		offset = offsetPre
 		after = pre
-		after_using = b
+		afterUsing = b
 	case 0x00FC: // SST
 		info := new(SstInfo)
 		binary.Read(item, binary.LittleEndian, info)
@@ -204,21 +204,21 @@ func (w *WorkBook) parseString(buf io.ReadSeeker, size uint16) (res string, err 
 		_, err = buf.Read(bts)
 		res = string(bytes.Trim(bts, "\r\n\t "))
 	} else {
-		var richtext_num = uint16(0)
-		var phonetic_size = uint32(0)
+		var richtextNum = uint16(0)
+		var phoneticSize = uint32(0)
 		var flag byte
 		err = binary.Read(buf, binary.LittleEndian, &flag)
 		if flag&0x8 != 0 {
-			err = binary.Read(buf, binary.LittleEndian, &richtext_num)
-		} else if w.continue_rich > 0 {
-			richtext_num = w.continue_rich
-			w.continue_rich = 0
+			err = binary.Read(buf, binary.LittleEndian, &richtextNum)
+		} else if w.continueRich > 0 {
+			richtextNum = w.continueRich
+			w.continueRich = 0
 		}
 		if flag&0x4 != 0 {
-			err = binary.Read(buf, binary.LittleEndian, &phonetic_size)
-		} else if w.continue_apsb > 0 {
-			phonetic_size = w.continue_apsb
-			w.continue_apsb = 0
+			err = binary.Read(buf, binary.LittleEndian, &phoneticSize)
+		} else if w.continueApsb > 0 {
+			phoneticSize = w.continueApsb
+			w.continueApsb = 0
 		}
 		if flag&0x1 != 0 {
 			var bts = make([]uint16, size)
@@ -229,14 +229,14 @@ func (w *WorkBook) parseString(buf io.ReadSeeker, size uint16) (res string, err 
 			runes := utf16.Decode(bts[:i])
 			res = strings.Trim(string(runes), "\r\n\t ")
 			if i < size {
-				w.continue_utf16 = size - i + 1
+				w.continueUtf16 = size - i + 1
 			}
 		} else {
 			var bts = make([]byte, size)
 			var n int
 			n, err = buf.Read(bts)
 			if uint16(n) < size {
-				w.continue_utf16 = size - uint16(n)
+				w.continueUtf16 = size - uint16(n)
 				err = io.EOF
 			}
 
@@ -247,26 +247,26 @@ func (w *WorkBook) parseString(buf io.ReadSeeker, size uint16) (res string, err 
 			runes := utf16.Decode(bts1)
 			res = strings.Trim(string(runes), "\r\n\t ")
 		}
-		if richtext_num > 0 {
+		if richtextNum > 0 {
 			var bts []byte
 			var ss int64
 			if w.Is5ver {
-				ss = int64(2 * richtext_num)
+				ss = int64(2 * richtextNum)
 			} else {
-				ss = int64(4 * richtext_num)
+				ss = int64(4 * richtextNum)
 			}
 			bts = make([]byte, ss)
 			err = binary.Read(buf, binary.LittleEndian, bts)
 			if err == io.EOF {
-				w.continue_rich = richtext_num
+				w.continueRich = richtextNum
 			}
 		}
-		if phonetic_size > 0 {
+		if phoneticSize > 0 {
 			var bts []byte
-			bts = make([]byte, phonetic_size)
+			bts = make([]byte, phoneticSize)
 			err = binary.Read(buf, binary.LittleEndian, bts)
 			if err == io.EOF {
-				w.continue_apsb = phonetic_size
+				w.continueApsb = phoneticSize
 			}
 		}
 	}

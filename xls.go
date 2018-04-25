@@ -12,20 +12,20 @@ import (
 
 // Open open one xls file with some charset
 func Open(file string, charset string) (*WorkBook, error) {
-	if fi, err := os.Open(file); err == nil {
-		return OpenReader(fi, charset)
-	} else {
+	fi, err := os.Open(file)
+	if err != nil {
 		return nil, err
 	}
+	return OpenReader(fi, charset)
 }
 
 // OpenWithBuffer open one xls file with memory buffer
 func OpenWithBuffer(file string, charset string) (*WorkBook, error) {
-	if fi, err := ioutil.ReadFile(file); err == nil {
-		return OpenReader(bytes.NewReader(fi), charset)
-	} else {
+	fi, err := ioutil.ReadFile(file)
+	if err != nil {
 		return nil, err
 	}
+	return OpenReader(bytes.NewReader(fi), charset)
 }
 
 // OpenWithCloser open one xls file and return the closer

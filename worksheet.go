@@ -37,6 +37,7 @@ type WorkSheet struct {
 	parsed bool
 }
 
+// Row returns the row according the index, if the row is not exist, it will return nil
 func (w *WorkSheet) Row(i int) *Row {
 	row := w.rows[uint16(i)]
 	if row != nil {
