@@ -5,6 +5,15 @@ XLS
 [![](https://goreportcard.com/badge/github.com/lunny/xls)](https://goreportcard.com/report/github.com/lunny/xls)
 [![GoDoc](https://godoc.org/github.com/lunny/xls?status.svg)](https://godoc.org/github.com/csg800/xls)
 
+# Installation
+
+    go get github.com/lunny/xls
+
+# Reference
+
+* [http://www.ozgrid.com/Excel/CustomFormats.htm](http://www.ozgrid.com/Excel/CustomFormats.htm)
+* [http://www.openoffice.org/sc/excelfileformat.pdf](http://www.openoffice.org/sc/excelfileformat.pdf)
+
 # Contributors
 
 Pure Golang xls library writen by [Rongshu Tech(chinese)](http://www.rongshu.tech). 
@@ -27,4 +36,3 @@ The master brunch has just the reading function without the format.
 * Use **OpenReader** function for open xls from a reader, you should close related file in your own code
 
 * Follow the example in GODOC
-

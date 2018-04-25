@@ -18,23 +18,31 @@ type CellRange struct {
 	LastColB  uint16
 }
 
+// FirstRow return first row index
 func (c *CellRange) FirstRow() uint16 {
 	return c.FirstRowB
 }
 
+// LastRow return last row index
 func (c *CellRange) LastRow() uint16 {
 	return c.LastRowB
 }
 
+// FirstCol return first column index
 func (c *CellRange) FirstCol() uint16 {
 	return c.FristColB
 }
 
+// LastCol return last column index
 func (c *CellRange) LastCol() uint16 {
 	return c.LastColB
 }
 
-//hyperlink type's content
+var (
+	_ contentHandler = &HyperLink{}
+)
+
+// HyperLink represents a hyperlink's content
 type HyperLink struct {
 	CellRange
 	Description      string
@@ -46,11 +54,12 @@ type HyperLink struct {
 	IsUrl            bool
 }
 
+// Debug prints the needed file dump
 func (h *HyperLink) Debug(wb *WorkBook) {
 	fmt.Printf("hyper link col dump:%#+v\n", h)
 }
 
-//get the hyperlink string, use the public variable Url to get the original Url
+// String gets the hyperlink string, use the public variable Url to get the original Url
 func (h *HyperLink) String(wb *WorkBook) []string {
 	res := make([]string, h.LastColB-h.FristColB+1)
 	var str string

@@ -8,7 +8,7 @@ import (
 	"unicode/utf16"
 )
 
-//xls workbook type
+// WorkBook represents xls workbook type
 type WorkBook struct {
 	Is5ver         bool
 	Type           uint16
@@ -27,7 +27,7 @@ type WorkBook struct {
 	dateMode       uint16
 }
 
-//read workbook from ole2 file
+// newWorkBookFromOle2 read workbook from ole2 file
 func newWorkBookFromOle2(rs io.ReadSeeker) *WorkBook {
 	var wb = &WorkBook{
 		rs:      rs,
@@ -192,7 +192,7 @@ func (w *WorkBook) prepare() {
 	}
 }
 
-//reading a sheet from the compress file to memory, you should call this before you try to get anything from sheet
+//prepareSheet reads a sheet from the compress file to memory, you should call this before you try to get anything from sheet
 func (w *WorkBook) prepareSheet(sheet *WorkSheet) {
 	w.rs.Seek(int64(sheet.bs.Filepos), 0)
 	sheet.parse(w.rs)
@@ -273,7 +273,7 @@ func (w *WorkBook) parseString(buf io.ReadSeeker, size uint16) (res string, err 
 	return
 }
 
-// Format format value to string
+// Format formats value to string
 func (w *WorkBook) Format(xf uint16, v float64) (string, bool) {
 	var val string
 	var idx = int(xf)
@@ -286,7 +286,7 @@ func (w *WorkBook) Format(xf uint16, v float64) (string, bool) {
 	return val, false
 }
 
-//GetSheet get one sheet by its number
+// GetSheet gets one sheet by its number
 func (w *WorkBook) GetSheet(num int) *WorkSheet {
 	if num < len(w.sheets) {
 		s := w.sheets[num]
@@ -298,14 +298,14 @@ func (w *WorkBook) GetSheet(num int) *WorkSheet {
 	return nil
 }
 
-//Get the number of all sheets, look into example
+// NumSheets get the number of all sheets, look into example
 func (w *WorkBook) NumSheets() int {
 	return len(w.sheets)
 }
 
-//ReadAllCells helper function to read all cells from file
-//Notice: the max value is the limit of the max capacity of lines.
-//Warning: the helper function will need big memory if file is large.
+// ReadAllCells helper function to read all cells from file
+// Notice: the max value is the limit of the max capacity of lines.
+// Warning: the helper function will need big memory if file is large.
 func (w *WorkBook) ReadAllCells(max int) (res [][]string) {
 	res = make([][]string, 0)
 	for _, sheet := range w.sheets {
