@@ -25,7 +25,7 @@ type ExtSheetInfo struct {
 	LastSheetIndex    uint16
 }
 
-//WorkSheet in one WorkBook
+// WorkSheet in one WorkBook
 type WorkSheet struct {
 	bs   *boundsheet
 	wb   *WorkBook

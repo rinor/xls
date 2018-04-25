@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-// Excel styles can reference number formats that are built-in, all of which
+// builtInNumFmt is the Excel styles can reference number formats that are built-in, all of which
 // have an id less than 164. This is a possibly incomplete list comprised of as
 // many of them as I could find.
 var builtInNumFmt = map[uint16]string{
@@ -216,5 +216,6 @@ func parseTime(v float64, f string) string {
 
 // is12HourTime checks whether an Excel time format string is a 12 hours form.
 func is12HourTime(format string) bool {
-	return strings.Contains(format, "am/pm") || strings.Contains(format, "AM/PM") || strings.Contains(format, "a/p") || strings.Contains(format, "A/P")
+	return strings.Contains(format, "am/pm") || strings.Contains(format, "AM/PM") ||
+		strings.Contains(format, "a/p") || strings.Contains(format, "A/P")
 }

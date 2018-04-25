@@ -11,19 +11,21 @@ import (
 var ErrIsInt = errors.New("is int")
 
 /* Data types */
-const TYPE_STRING2 = 1
-const TYPE_STRING = 2
-const TYPE_FORMULA = 3
-const TYPE_NUMERIC = 4
-const TYPE_BOOL = 5
-const TYPE_NULL = 6
-const TYPE_INLINE = 7
-const TYPE_ERROR = 8
-const TYPE_DATETIME = 9
-const TYPE_PERCENTAGE = 10
-const TYPE_CURRENCY = 11
+const (
+	TYPE_STRING2    = iota + 1
+	TYPE_STRING     // 2
+	TYPE_FORMULA    // 3
+	TYPE_NUMERIC    // 4
+	TYPE_BOOL       // 5
+	TYPE_NULL       // 6
+	TYPE_INLINE     // 7
+	TYPE_ERROR      // 8
+	TYPE_DATETIME   // 9
+	TYPE_PERCENTAGE // 10
+	TYPE_CURRENCY   // 11
+)
 
-//content type
+// contentHandler content type
 type contentHandler interface {
 	Debug(wb *WorkBook)
 	String(*WorkBook) []string

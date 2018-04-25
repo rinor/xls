@@ -4,13 +4,13 @@ import (
 	"fmt"
 )
 
-// range type of multi rows
+// Ranger is range type of multi rows
 type Ranger interface {
 	FirstRow() uint16
 	LastRow() uint16
 }
 
-// range type of multi cells in multi rows
+// CellRange is range type of multi cells in multi rows
 type CellRange struct {
 	FirstRowB uint16
 	LastRowB  uint16

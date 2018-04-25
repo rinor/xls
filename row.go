@@ -10,15 +10,15 @@ type rowInfo struct {
 	Flags    uint32
 }
 
-//Row the data of one row
+// Row the data of one row
 type Row struct {
 	wb   *WorkBook
 	info *rowInfo
 	cols map[uint16]contentHandler
 }
 
-//Col Get the Nth Col from the Row, if has not, return nil.
-//Suggest use Has function to test it.
+// Col Get the Nth Col from the Row, if has not, return nil.
+// Suggest use Has function to test it.
 func (r *Row) Col(i int) string {
 	var val string
 	var serial = uint16(i)
@@ -38,7 +38,7 @@ func (r *Row) Col(i int) string {
 	return val
 }
 
-//FirstCol Get the number of First Col of the Row.
+// FirstCol Get the number of First Col of the Row.
 func (r *Row) FirstCol() int {
 	return int(r.info.First)
 }
