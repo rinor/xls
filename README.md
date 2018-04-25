@@ -1,6 +1,11 @@
-# xls
+XLS
+=======================
 
-[![GoDoc](https://godoc.org/github.com/csg800/xls?status.svg)](https://godoc.org/github.com/csg800/xls)
+[![CircleCI](https://circleci.com/gh/lunny/xls.svg?style=shield)](https://circleci.com/gh/lunny/xls)  [![codecov](https://codecov.io/gh/lunny/xls/branch/master/graph/badge.svg)](https://codecov.io/gh/lunny/xls)
+[![](https://goreportcard.com/badge/github.com/lunny/xls)](https://goreportcard.com/report/github.com/lunny/xls)
+[![GoDoc](https://godoc.org/github.com/lunny/xls?status.svg)](https://godoc.org/github.com/csg800/xls)
+
+# Contributors
 
 Pure Golang xls library writen by [Rongshu Tech(chinese)](http://www.rongshu.tech). 
 Add Formula & Format support by [chen.s.g] (http://www.imohe.com)
