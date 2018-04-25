@@ -56,7 +56,7 @@ func (w *WorkBook) parse(buf io.ReadSeeker) {
 	}
 }
 
-func (wb *WorkBook) parseBof(buf io.ReadSeeker, b *bof, pre *bof, offsetPre int) (after *bof, afterUsing *bof, offset int) {
+func (w *WorkBook) parseBof(buf io.ReadSeeker, b *bof, pre *bof, offsetPre int) (after *bof, afterUsing *bof, offset int) {
 	after = b
 	afterUsing = pre
 	var bts = make([]byte, b.Size)
@@ -67,26 +67,26 @@ func (wb *WorkBook) parseBof(buf io.ReadSeeker, b *bof, pre *bof, offsetPre int)
 		bif := new(biffHeader)
 		binary.Read(item, binary.LittleEndian, bif)
 		if bif.Ver != 0x600 {
-			wb.Is5ver = true
+			w.Is5ver = true
 		}
-		wb.Type = bif.Type
+		w.Type = bif.Type
 	case 0x0042: // CODEPAGE
-		binary.Read(item, binary.LittleEndian, &wb.Codepage)
+		binary.Read(item, binary.LittleEndian, &w.Codepage)
 	case 0x3C: // CONTINUE
 		if pre.Id == 0xfc {
 			var size uint16
 			var err error
-			if wb.continueUtf16 >= 1 {
-				size = wb.continueUtf16
-				wb.continueUtf16 = 0
+			if w.continueUtf16 >= 1 {
+				size = w.continueUtf16
+				w.continueUtf16 = 0
 			} else {
 				err = binary.Read(item, binary.LittleEndian, &size)
 			}
-			for err == nil && offsetPre < len(wb.sst) {
+			for err == nil && offsetPre < len(w.sst) {
 				var str string
 				if size > 0 {
-					str, err = wb.parseString(item, size)
-					wb.sst[offsetPre] = wb.sst[offsetPre] + str
+					str, err = w.parseString(item, size)
+					w.sst[offsetPre] = w.sst[offsetPre] + str
 				}
 
 				if err == io.EOF {
@@ -103,15 +103,15 @@ func (wb *WorkBook) parseBof(buf io.ReadSeeker, b *bof, pre *bof, offsetPre int)
 	case 0x00FC: // SST
 		info := new(SstInfo)
 		binary.Read(item, binary.LittleEndian, info)
-		wb.sst = make([]string, info.Count)
+		w.sst = make([]string, info.Count)
 		var size uint16
 		var i = 0
 		for ; i < int(info.Count); i++ {
 			var err error
 			if err = binary.Read(item, binary.LittleEndian, &size); err == nil {
 				var str string
-				str, err = wb.parseString(item, size)
-				wb.sst[i] = wb.sst[i] + str
+				str, err = w.parseString(item, size)
+				w.sst[i] = w.sst[i] + str
 			}
 
 			if err == io.EOF {
@@ -123,39 +123,39 @@ func (wb *WorkBook) parseBof(buf io.ReadSeeker, b *bof, pre *bof, offsetPre int)
 		var bs = new(boundsheet)
 		binary.Read(item, binary.LittleEndian, bs)
 		// different for BIFF5 and BIFF8
-		wb.addSheet(bs, item)
+		w.addSheet(bs, item)
 	case 0x0017: // EXTERNSHEET
-		if !wb.Is5ver {
-			binary.Read(item, binary.LittleEndian, &wb.ref.Num)
-			wb.ref.Info = make([]ExtSheetInfo, wb.ref.Num)
-			binary.Read(item, binary.LittleEndian, &wb.ref.Info)
+		if !w.Is5ver {
+			binary.Read(item, binary.LittleEndian, &w.ref.Num)
+			w.ref.Info = make([]ExtSheetInfo, w.ref.Num)
+			binary.Read(item, binary.LittleEndian, &w.ref.Info)
 		}
 	case 0x00e0: // XF
-		if wb.Is5ver {
+		if w.Is5ver {
 			xf := new(Xf5)
 			binary.Read(item, binary.LittleEndian, xf)
-			wb.addXf(xf)
+			w.addXf(xf)
 		} else {
 			xf := new(Xf8)
 			binary.Read(item, binary.LittleEndian, xf)
-			wb.addXf(xf)
+			w.addXf(xf)
 		}
 	case 0x0031: // FONT
 		f := new(FontInfo)
 		binary.Read(item, binary.LittleEndian, f)
-		wb.addFont(f, item)
+		w.addFont(f, item)
 	case 0x041E: //FORMAT
 		format := new(Format)
 		binary.Read(item, binary.LittleEndian, &format.Head)
-		if raw, err := wb.parseString(item, format.Head.Size); nil == err && "" != raw {
+		if raw, err := w.parseString(item, format.Head.Size); nil == err && "" != raw {
 			format.Raw = strings.Split(raw, ";")
 		} else {
 			format.Raw = []string{}
 		}
 
-		wb.addFormat(format)
+		w.addFormat(format)
 	case 0x0022: //DATEMODE
-		binary.Read(item, binary.LittleEndian, &wb.dateMode)
+		binary.Read(item, binary.LittleEndian, &w.dateMode)
 	}
 	return
 }
