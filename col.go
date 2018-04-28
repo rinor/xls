@@ -189,7 +189,7 @@ func (c *NumberCol) String(wb *WorkBook) []string {
 	return []string{strconv.FormatFloat(c.Float, 'f', -1, 64)}
 }
 
-type FormulaColHeader struct {
+type formulaColHeader struct {
 	Col
 	IndexXf uint16
 	Result  [8]byte
@@ -198,7 +198,7 @@ type FormulaColHeader struct {
 }
 
 // Value formula header value
-func (f *FormulaColHeader) Value() float64 {
+func (f *formulaColHeader) Value() float64 {
 	var rknumhigh = ByteToUint32(f.Result[4:8])
 	var rknumlow = ByteToUint32(f.Result[0:4])
 	var sign = (rknumhigh & 0x80000000) >> 31
@@ -225,17 +225,18 @@ func (f *FormulaColHeader) Value() float64 {
 // We can apparently not rely on $isPartOfSharedFormula. Even when $isPartOfSharedFormula = true
 // the formula data may be ordinary formula data, therefore we need to check
 // explicitly for the tExp token (0x01)
-func (f *FormulaColHeader) IsPart() bool {
+func (f *formulaColHeader) IsPart() bool {
 	return 0 != (0x0008 & ByteToUint16(f.Result[6:8]))
 }
 
+// FormulaCol represents formula cell
 type FormulaCol struct {
 	parsed bool
 	Code   uint16
 	Btl    uint16
 	Btc    uint16
 	Bts    []byte
-	Header *FormulaColHeader
+	Header *formulaColHeader
 	ws     int
 	vType  int
 	value  string
@@ -312,7 +313,7 @@ func (c *FormulaCol) parse(wb *WorkBook, ref bool) {
 			if c.value, flag = wb.Format(c.Header.IndexXf, 0); !flag {
 				c.value = parseTime(0, time.RFC3339)
 			}
-		} else if c.isRef() {
+		} else if c.IsRef() {
 			if ref {
 				var ws = -1
 				var find bool
@@ -353,8 +354,8 @@ func (c *FormulaCol) parse(wb *WorkBook, ref bool) {
 	}
 }
 
-// isRef return cell is reference to other cell
-func (c *FormulaCol) isRef() bool {
+// IsRef return true if cell is reference to other cell
+func (c *FormulaCol) IsRef() bool {
 	if 0x05 == c.Bts[0] && (0x24 == c.Bts[2] || 0x44 == c.Bts[2] || 0x64 == c.Bts[2]) {
 		return true
 	} else if 0x07 == c.Bts[0] && (0x3A == c.Bts[2] || 0x5A == c.Bts[2] || 0x7A == c.Bts[2]) {
@@ -422,6 +423,7 @@ func (c *labelCol) String(wb *WorkBook) []string {
 	return []string{c.Str}
 }
 
+// BlankCol represents a blank cell
 type BlankCol struct {
 	Col
 	Xf uint16

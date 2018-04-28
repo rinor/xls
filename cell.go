@@ -41,3 +41,14 @@ func (c cell) IsFormula() bool {
 func (c cell) MustFormula() *FormulaCol {
 	return c.contentHandler.(*FormulaCol)
 }
+
+// IsBlank return true if the cell is blank
+func (c cell) IsBlank() bool {
+	_, ok := c.contentHandler.(*BlankCol)
+	return ok
+}
+
+// MustBlank always return blank
+func (c cell) MustBlank() *BlankCol {
+	return c.contentHandler.(*BlankCol)
+}

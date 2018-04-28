@@ -94,7 +94,7 @@ func (w *WorkSheet) parseBof(buf io.ReadSeeker, b *bof, pre *bof) *bof {
 	case 0x06: //FORMULA
 		c := new(FormulaCol)
 		c.ws = w.id
-		c.Header = new(FormulaColHeader)
+		c.Header = new(formulaColHeader)
 		c.Bts = make([]byte, b.Size-20)
 		binary.Read(buf, binary.LittleEndian, c.Header)
 		binary.Read(buf, binary.LittleEndian, &c.Bts)
