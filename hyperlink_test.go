@@ -33,6 +33,7 @@ func TestHyperlink(t *testing.T) {
 			assert.True(t, ce.IsHyperLink())
 			assert.False(t, ce.IsNumber())
 			assert.False(t, ce.IsFormula())
+			assert.False(t, ce.IsBlank())
 			hl := ce.MustHpyerLink()
 			assert.NotNil(t, hl)
 			assert.True(t, hl.IsUrl)
