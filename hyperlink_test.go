@@ -29,9 +29,14 @@ func TestHyperlink(t *testing.T) {
 		assert.EqualValues(t, 1, row.LastCol())
 		for j := row.FirstCol(); j < row.LastCol(); j++ {
 			ce := row.Column(j)
+			assert.True(t, ce.IsValid())
+			assert.True(t, ce.IsHyperLink())
+			assert.False(t, ce.IsNumber())
+			assert.False(t, ce.IsFormula())
 			hl := ce.MustHpyerLink()
 			assert.NotNil(t, hl)
 			assert.True(t, hl.IsUrl)
+			assert.EqualValues(t, strings.Split(results[i][j], "(")[0], hl.Description)
 			assert.EqualValues(t, strings.TrimRight(strings.Split(results[i][j], "(")[1], ")"), hl.Url)
 			assert.EqualValues(t, results[i][j], row.Col(j))
 		}
