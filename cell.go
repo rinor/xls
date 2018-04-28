@@ -52,3 +52,14 @@ func (c cell) IsBlank() bool {
 func (c cell) MustBlank() *BlankCol {
 	return c.contentHandler.(*BlankCol)
 }
+
+// IsRk return true if the cell is rk
+func (c cell) IsRk() bool {
+	_, ok := c.contentHandler.(*RkCol)
+	return ok
+}
+
+// MustRk alwasy return RkCol
+func (c cell) MustRk() *RkCol {
+	return c.contentHandler.(*RkCol)
+}
