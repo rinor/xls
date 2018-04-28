@@ -17,8 +17,7 @@ type Row struct {
 	cols map[uint16]contentHandler
 }
 
-// Col Get the Nth Col from the Row, if has not, return nil.
-// Suggest use Has function to test it.
+// Col Get the Nth Column on the Row.
 func (r *Row) Col(i int) string {
 	var val string
 	var serial = uint16(i)
@@ -36,6 +35,23 @@ func (r *Row) Col(i int) string {
 	}
 
 	return val
+}
+
+// Column will return the index i cell of the row
+func (r *Row) Column(i int) cell {
+	var serial = uint16(i)
+
+	if ch, ok := r.cols[serial]; ok {
+		return cell{ch}
+	}
+
+	for _, v := range r.cols {
+		if v.FirstCol() <= serial && v.LastCol() >= serial {
+			return cell{v}
+		}
+	}
+
+	return cell{nil}
 }
 
 // FirstCol Get the number of First Col of the Row.
