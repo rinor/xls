@@ -1,3 +1,5 @@
-module "github.com/lunny/xls"
+module github.com/rinor/xls
 
-require "github.com/extrame/ole2" v0.0.0-20160812065207-d69429661ad7
+go 1.12
+
+require github.com/extrame/ole2 v0.0.0-20160812065207-d69429661ad7
